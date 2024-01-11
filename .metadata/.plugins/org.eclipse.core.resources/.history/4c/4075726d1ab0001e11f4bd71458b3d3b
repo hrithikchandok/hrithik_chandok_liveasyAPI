@@ -1,0 +1,76 @@
+package com.liveasy.logistics.liveasy.load;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class LoadController 
+{
+	@Autowired
+   private LoadRepository loadRepository;
+	
+	@GetMapping(value="/load")
+	public List<Load> getsimple(@RequestParam int shipperId)
+	{
+		 List<Load>temp= loadRepository.findByshipperId(shipperId);
+		 
+		 return temp;
+		
+	}
+	
+	@PostMapping(value="/load")
+	public String postsimple(@RequestBody Load load)
+	{
+		 loadRepository.save(load);
+		 return "Response:loads details added successfully";
+		
+	}
+	
+	@GetMapping(value="/load/{loadId}")
+	public Optional<Load> getdetailsbyLoadid(@PathVariable int loadId)
+	{
+		 Optional<Load>temp= loadRepository.findById(loadId);
+		 
+		 return temp;
+		
+	}
+	
+	@DeleteMapping(value="/load/{loadId}")
+	public void deleteDetailsByLoadId(@PathVariable int loadId)
+	{
+//		 Optional<Load>temp= loadRepository.findById(loadId);
+		 
+		 loadRepository.deleteById(loadId);
+		 
+//		 return temp;
+		
+	}
+	
+	@PutMapping(value="/load/{loadId}")
+	public Optional<Load> updateDetailsById(@RequestBody Load updatedLoad,@PathVariable int loadId)
+	{
+		Optional<Load> Original= loadRepository.findById(loadId);
+		
+		updatedLoad.setShipperId(Original.get().getShipperId());
+		updatedLoad.setId(Original.get().getId());
+		
+		loadRepository.deleteById(loadId);
+		
+		 
+		 return temp;
+		
+	}
+	
+	
+	
+}

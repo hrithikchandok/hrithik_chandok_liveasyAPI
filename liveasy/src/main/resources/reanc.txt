@@ -1,0 +1,46 @@
+@RestController
+@RequestMapping("/api/products")
+public class ProductController {
+
+    @Autowired
+    private ProductRepository productRepository;
+
+    @Autowired
+    private CategoryRepository categoryRepository;
+
+    // ... other methods ...
+
+    // Update an existing product
+    @PutMapping("/{productId}")
+    public ResponseEntity<Product> updateProduct(@PathVariable Long productId, @RequestBody Product updatedProduct) {
+        Optional<Product> optionalProduct = productRepository.findById(productId);
+
+        if (optionalProduct.isPresent()) {
+            Product existingProduct = optionalProduct.get();
+
+            // Update only the fields that are present in the updatedProduct
+            if (updatedProduct.getName() != null) {
+                existingProduct.setName(updatedProduct.getName());
+            }
+
+            if (updatedProduct.getPrice() != null) {
+                existingProduct.setPrice(updatedProduct.getPrice());
+            }
+
+            if (updatedProduct.getCategory() != null && updatedProduct.getCategory().getId() != null) {
+                // Ensure the updated category exists before saving the product
+                Category category = categoryRepository.findById(updatedProduct.getCategory().getId())
+                        .orElseThrow(() -> new IllegalArgumentException("Invalid category ID"));
+
+                existingProduct.setCategory(category);
+            }
+
+            Product savedProduct = productRepository.save(existingProduct);
+            return new ResponseEntity<>(savedProduct, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    // ... other methods ...
+}
